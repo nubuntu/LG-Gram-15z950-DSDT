@@ -11255,17 +11255,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 TSLT,   8, 
                 TSSR,   8, 
                 B1CM,   8, 
-                B1DC,   16, 
-                B1RC,   16, 
-                B1FC,   16, 
-                B1FV,   16, 
-                B1DI,   16, 
-                B1CI,   16, 
-                B2RC,   16, 
-                B2FC,   16, 
-                B2FV,   16, 
-                B2DI,   16, 
-                B2CI,   16, 
+                BDC0,8,BDC1,8, 
+                BRC0,8,BRC1,8, 
+                BFC0,8,BFC1,8, 
+                BFV0,8,BFV1,8, 
+                BDI0,8,BDI1,8, 
+                BCI0,8,BCI1,8, 
+                BRC2,8,BRC3,8, 
+                BFC2,8,BFC3,8, 
+                BFV2,8,BFV3,8, 
+                BDI2,8,BDI3,8, 
+                BCI2,8,BCI3,8, 
                 CPAP,   16, 
                 BKAP,   16, 
                 PLAP,   16, 
@@ -11335,7 +11335,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 SPT2,   1, 
                 Offset (0xC9), 
                 Offset (0xD3), 
-                B1DV,   16, 
+                BDV0,8,BDV1,8, 
                 Offset (0xD7), 
                 B1ML,   8, 
                 B1MH,   8, 
@@ -12123,16 +12123,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B1FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC0,BFC1))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, One))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x02))
-                            Store (B1DV, Index (BPKG, 0x04))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPKG, 0x04))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPKG, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPKG, 0x06))
                             Store (0x0100, Index (BPKG, 0x07))
                             Store (0x40, Index (BPKG, 0x08))
@@ -12169,16 +12169,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B1FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC0,BFC1))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x02))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x03))
-                            Store (ECRD (RefOf (B1DV)), Index (BPKG, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPKG, 0x05))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPKG, 0x06))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPKG, 0x07))
                             Store (0x0100, Index (BPKG, 0x08))
                             Store (0x40, Index (BPKG, 0x09))
@@ -12204,20 +12204,20 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Store (And (ECRD (RefOf (B1ST)), 0x07), Index (PKG1, Zero))
                         If (And (ECRD (RefOf (B1ST)), One))
                         {
-                            Store (Multiply (ECRD (RefOf (B1DI)), ECRD (RefOf (B1FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BDI0,BDI1)), ECRD(B1B2(BFV0,BFV1))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG1, One))
                         }
                         Else
                         {
-                            Store (Multiply (ECRD (RefOf (B1CI)), ECRD (RefOf (B1FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BCI0,BCI1)), ECRD(B1B2(BFV0,BFV1))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG1, One))
                         }
 
-                        Store (Divide (Multiply (ECRD (RefOf (B1RC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                        Store (Divide (Multiply (ECRD(B1B2(BRC0,BRC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                             ), Index (PKG1, 0x02))
-                        Store (ECRD (RefOf (B1FV)), Index (PKG1, 0x03))
+                        Store (ECRD(B1B2(BFV0,BFV1)), Index (PKG1, 0x03))
                     }
 
                     Return (PKG1)
@@ -12227,11 +12227,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (ECAV)
                     {
-                        If (LAnd (LNotEqual (ECRD (RefOf (B1FC)), Zero), LNotEqual (ECRD (RefOf (
-                            B1FV)), Zero)))
+                        If (LAnd (LNotEqual (ECRD(B1B2(BFC0,BFC1)), Zero), LNotEqual (ECRD(B1B2(BFV0,BFV1)), Zero)))
                         {
-                            Store (Divide (Multiply (Arg2, 0x64), Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (
-                                RefOf (B1FV))), 0x03E8, ), ), Local0)
+                            Store (Divide (Multiply (Arg2, 0x64), Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BFV0,BFV1))), 0x03E8, ), ), Local0)
                             Add (Local0, One, Local0)
                             ECWT (Local0, RefOf (BTP1))
                             ECMD (0x34)
@@ -12243,8 +12241,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (ECAV)
                     {
-                        If (LAnd (LNotEqual (ECRD (RefOf (B1FC)), Zero), LNotEqual (ECRD (RefOf (
-                            B1FV)), Zero)))
+                        If (LAnd (LNotEqual (ECRD(B1B2(BFC0,BFC1)), Zero), LNotEqual (ECRD(B1B2(BFV0,BFV1)), Zero)))
                         {
                             ECWT (Arg0, RefOf (BTPW))
                         }
@@ -12331,18 +12328,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B2FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC2,BFC3))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPK2, One))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPK2, 0x02))
-                            Store (B1DV, Index (BPK2, 0x04))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPK2, 0x04))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPK2, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPK2, 0x06))
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x000186A0, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x000186A0, 
                                 ), Index (BPK2, 0x07))
                         }
                     }
@@ -12364,20 +12361,20 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Store (And (ECRD (RefOf (B2ST)), 0x07), Index (PKG2, Zero))
                         If (And (ECRD (RefOf (B2ST)), One))
                         {
-                            Store (Multiply (ECRD (RefOf (B2DI)), ECRD (RefOf (B2FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BDI2,BDI3)), ECRD(B1B2(BFV2,BFV3))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG2, One))
                         }
                         Else
                         {
-                            Store (Multiply (ECRD (RefOf (B2CI)), ECRD (RefOf (B2FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BCI2,BCI3)), ECRD(B1B2(BFV2,BFV3))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG2, One))
                         }
 
-                        Store (Divide (Multiply (ECRD (RefOf (B2RC)), ECRD (RefOf (B2FV))), 0x03E8, 
+                        Store (Divide (Multiply (ECRD(B1B2(BRC2,BRC3)), ECRD(B1B2(BFV2,BFV3))), 0x03E8, 
                             ), Index (PKG2, 0x02))
-                        Store (ECRD (RefOf (B2FV)), Index (PKG2, 0x03))
+                        Store (ECRD(B1B2(BFV2,BFV3)), Index (PKG2, 0x03))
                     }
 
                     Return (PKG2)
@@ -26798,5 +26795,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             PUSH (TEMP)
         }
     }
+    Method (B1B2, 2, NotSerialized) { Return (Or (Arg0, ShiftLeft (Arg1, 8))) }
 }
 
