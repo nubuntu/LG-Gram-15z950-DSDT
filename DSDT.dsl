@@ -11987,6 +11987,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 Name (_UID, Zero)  // _UID: Unique ID
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
+                    /**
                     If (LGEC)
                     {
                         Return (Zero)
@@ -12006,6 +12007,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     {
                         Return (0x0B)
                     }
+                    **/
 
                     Return (0x1F)
                 }
@@ -12078,10 +12080,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 Name (_UID, One)  // _UID: Unique ID
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
+                    /**
                     If (LGEC)
                     {
                         Return (Zero)
                     }
+                    **/
 
                     If (ECAV)
                     {
@@ -12273,13 +12277,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 Name (_UID, 0x02)  // _UID: Unique ID
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
+                    /**
                     If (LGEC)
                     {
                         Return (Zero)
                     }
+                    **/
 
                     If (ECAV)
                     {
+                        /**
                         If (LOr (LEqual (BID, 0x30), LEqual (BID, 0x31)))
                         {
                             Return (Zero)
@@ -12289,7 +12296,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         {
                             Return (Zero)
                         }
-
+                        **/
                         If (And (BNUM, 0x02))
                         {
                             Return (0x1F)
