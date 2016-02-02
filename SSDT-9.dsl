@@ -5,7 +5,7 @@
  * 
  * Disassembling to non-symbolic legacy ASL operators
  *
- * Disassembly of SSDT-9.aml, Sun Jan 31 04:12:11 2016
+ * Disassembly of SSDT-9.aml, Tue Feb  2 23:27:59 2016
  *
  * Original Table Header:
  *     Signature        "SSDT"
@@ -21,8 +21,8 @@
 DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
 {
     /*
-     * iASL Warning: There were 11 external control methods found during
-     * disassembly, but only 8 were resolved (3 unresolved). Additional
+     * iASL Warning: There were 14 external control methods found during
+     * disassembly, but only 12 were resolved (2 unresolved). Additional
      * ACPI tables may be required to properly disassemble the code. This
      * resulting disassembler output file may not compile because the
      * disassembler did not know how many arguments to assign to the
@@ -39,9 +39,17 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
      * because the disassembler had to guess at the number of arguments
      * required for each:
      */
-    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // Warning: Unresolved method, guessing 5 arguments
     External (HDOS, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
     External (HNOT, MethodObj)    // Warning: Unresolved method, guessing 1 arguments
+
+    /*
+     * External declarations that were imported from
+     * the reference file [refs.txt]
+     */
+    External (_GPE.MMTB, MethodObj)    // 0 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
+    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // 2 Arguments
 
     External (_SB_.PCI0, DeviceObj)
     External (_SB_.PCI0.AR02, MethodObj)    // 0 Arguments
@@ -5124,20 +5132,25 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
                 {
                     If (CondRefOf (\_SB.PCI0.PEG0.PEGP.SGPO))
                     {
-                        \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, One, \_SB.PCI0.PEG0.PEGP.SGPO (PWEN, Zero, Else
-                                {
-                                    If (LEqual (Arg1, One))
-                                    {
-                                        If (LEqual (Arg0, Zero))
-                                        {
-                                            If (CondRefOf (\_SB.PCI0.PEG0.PEGP.SGPO))
-                                            {
-                                                \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, One, \_SB.PCI0.PEG0.PEGP.SGPO (PWEN, One, Sleep (DLPW), \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, Zero, Sleep (
-                                                    DLHR))))
-                                            }
-                                        }
-                                    }
-                                }))
+                        \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, One)
+                        \_SB.PCI0.PEG0.PEGP.SGPO (PWEN, Zero)
+                    }
+                }
+            }
+            Else
+            {
+                If (LEqual (Arg1, One))
+                {
+                    If (LEqual (Arg0, Zero))
+                    {
+                        If (CondRefOf (\_SB.PCI0.PEG0.PEGP.SGPO))
+                        {
+                            \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, One)
+                            \_SB.PCI0.PEG0.PEGP.SGPO (PWEN, One)
+                            Sleep (DLPW)
+                            \_SB.PCI0.PEG0.PEGP.SGPO (HLRS, Zero)
+                            Sleep (DLHR)
+                        }
                     }
                 }
             }

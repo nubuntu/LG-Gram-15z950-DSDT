@@ -5,7 +5,7 @@
  * 
  * Disassembling to non-symbolic legacy ASL operators
  *
- * Disassembly of DSDT.aml, Sun Jan 31 04:12:11 2016
+ * Disassembly of DSDT.aml, Tue Feb  2 23:27:59 2016
  *
  * Original Table Header:
  *     Signature        "DSDT"
@@ -21,8 +21,8 @@
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 {
     /*
-     * iASL Warning: There were 28 external control methods found during
-     * disassembly, but only 11 were resolved (17 unresolved). Additional
+     * iASL Warning: There were 32 external control methods found during
+     * disassembly, but only 15 were resolved (17 unresolved). Additional
      * ACPI tables may be required to properly disassemble the code. This
      * resulting disassembler output file may not compile because the
      * disassembler did not know how many arguments to assign to the
@@ -56,6 +56,15 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     External (PS0X, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
     External (PS2X, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
     External (PS3X, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
+
+    /*
+     * External declarations that were imported from
+     * the reference file [refs.txt]
+     */
+    External (_GPE.MMTB, MethodObj)    // 0 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
+    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // 2 Arguments
 
     External (_PR_.BGIA, FieldUnitObj)
     External (_PR_.BGMA, FieldUnitObj)
