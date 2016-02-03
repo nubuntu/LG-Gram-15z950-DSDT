@@ -15068,7 +15068,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     _SB
                 })
                 Name (BLFC, Zero)
-                Mutex (BATM, 0x01)
+                Mutex(BATM, 0)
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
                     If (ECON)
@@ -16439,9 +16439,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Mutex (EHLD, 0x00)
-    Mutex (MUTX, 0x00)
-    Mutex (OSUM, 0x00)
+    Mutex(EHLD, 0)
+    Mutex(MUTX, 0)
+    Mutex(OSUM, 0)
     Event (WFEV)
     OperationRegion (PRT0, SystemIO, 0x80, 0x04)
     Field (PRT0, DWordAcc, Lock, Preserve)
@@ -26496,7 +26496,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             Return (Zero)
         }
 
-        Mutex (MSMI, 0x07)
+        Mutex(MSMI, 0)
         Method (NBIF, 0, Serialized)
         {
             If (BATP)
@@ -26674,7 +26674,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     {
         Name (_HID, "RMD0000")  // _HID: Hardware ID
         Name (RING, Package (0x0100) {})
-        Mutex (RTMX, 0x00)
+        Mutex(RTMX, 0)
         Name (HEAD, Zero)
         Name (TAIL, Zero)
         Method (PUSH, 1, NotSerialized)
