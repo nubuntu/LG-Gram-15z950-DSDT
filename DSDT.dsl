@@ -11517,7 +11517,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 BPVL,   8, 
                 BTP,    16, 
                 CBT,    16, 
-                BMFG,   72, 
+                BMF0,72,//BMFG,72,//0x9A 
                 TBA7,   8, 
                 TBA8,   8, 
                 TBA9,   8, 
@@ -14683,6 +14683,28 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     }
                 }
             }
+            Method (RE1B, 1, NotSerialized)
+            {
+                OperationRegion(ERAM, EmbeddedControl, Arg0, 1)
+                Field(ERAM, ByteAcc, NoLock, Preserve) { BYTE, 8 }
+                Return(BYTE)
+            }
+            Method (RECB, 2, Serialized)
+            // Arg0 - offset in bytes from zero-based EC
+            // Arg1 - size of buffer in bits
+            {
+                ShiftRight(Arg1, 3, Arg1)
+                Name(TEMP, Buffer(Arg1) { })
+                Add(Arg0, Arg1, Arg1)
+                Store(0, Local0)
+                While (LLess(Arg0, Arg1))
+                {
+                    Store(RE1B(Arg0), Index(TEMP, Local0))
+                    Increment(Arg0)
+                    Increment(Local0)
+                }
+                Return(TEMP)
+            }
         }
 
         Scope (\_SB)
@@ -15146,7 +15168,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         0x06))
                     If (LEqual (DerefOf (Index (PBIF, 0x09)), ""))
                     {
-                        Store (ToString (BMFG, Ones), Index (PBIF, 0x09))
+                        Store (ToString (RECB(0x9A,72), Ones), Index (PBIF, 0x09))
                     }
 
                     Acquire (BATM, 0xFFFF)
