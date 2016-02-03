@@ -5,7 +5,7 @@
  * 
  * Disassembling to non-symbolic legacy ASL operators
  *
- * Disassembly of SSDT-0.aml, Tue Feb  2 23:27:59 2016
+ * Disassembly of SSDT-0.aml, Sun Jan 31 04:12:11 2016
  *
  * Original Table Header:
  *     Signature        "SSDT"
@@ -20,15 +20,6 @@
  */
 DefinitionBlock ("SSDT-0.aml", "SSDT", 2, "LGE   ", "DptfTabl", 0x00001000)
 {
-
-    /*
-     * External declarations that were imported from
-     * the reference file [refs.txt]
-     */
-    External (_GPE.MMTB, MethodObj)    // 0 Arguments
-    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
-    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // 2 Arguments
 
     External (_PR_.AAC0, FieldUnitObj)
     External (_PR_.ACRT, FieldUnitObj)
@@ -83,6 +74,8 @@ DefinitionBlock ("SSDT-0.aml", "SSDT", 2, "LGE   ", "DptfTabl", 0x00001000)
     External (_SB_.PCI0.LPCB.H_EC.CHGR, FieldUnitObj)
     External (_SB_.PCI0.LPCB.H_EC.ECAV, IntObj)
     External (_SB_.PCI0.LPCB.H_EC.ECMD, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
     External (_SB_.PCI0.LPCB.H_EC.HYST, FieldUnitObj)
     External (_SB_.PCI0.LPCB.H_EC.PENV, FieldUnitObj)
     External (_SB_.PCI0.LPCB.H_EC.PINV, FieldUnitObj)
