@@ -5,7 +5,7 @@
  * 
  * Disassembling to non-symbolic legacy ASL operators
  *
- * Disassembly of SSDT-2.aml, Tue Feb  2 23:27:59 2016
+ * Disassembly of SSDT-2.aml, Sun Jan 31 04:12:11 2016
  *
  * Original Table Header:
  *     Signature        "SSDT"
@@ -20,14 +20,3 @@
  */
 DefinitionBlock ("SSDT-2.aml", "SSDT", 2, "LGE   ", "PtidDevc", 0x00001000)
 {
-
-    /*
-     * External declarations that were imported from
-     * the reference file [refs.txt]
-     */
-    External (_GPE.MMTB, MethodObj)    // 0 Arguments
-    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
-    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // 2 Arguments
-
-
