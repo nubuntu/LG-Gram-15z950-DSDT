@@ -15168,7 +15168,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         0x06))
                     If (LEqual (DerefOf (Index (PBIF, 0x09)), ""))
                     {
-                        Store (ToString (RECB(0x9A,72), Ones), Index (PBIF, 0x09))
+                        Store (ToString (RECB(0x9E,72), Ones), Index (PBIF, 0x09))
                     }
 
                     Acquire (BATM, 0xFFFF)
