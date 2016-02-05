@@ -26605,47 +26605,44 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Method (SPBE, 3, NotSerialized)
         {
             Store (Arg1, CBRT)
-
-                            
-                    If (LEqual(Arg1,0x8))
-                    {
-                        // Brightness Up
-                        Notify(\_SB.PCI0.LPCB.PS2K, 0x20)
-                    }
-                    Else
-                    {
-                        // Brightness Down
-                        Notify(\_SB.PCI0.LPCB.PS2K, 0x10)
-                    }
-                    
-                    \RMDT.P2 ("Arg1",Arg1)
+            
+            // Arg1 value is 0x0 to 0x8 (0x0,0x1,0x2,0x3,0x4,0x5,0x6,0x7,0x8) 
+            
+            // Patch begin                                                              
+            //===============
+                   
+            If (LEqual(Arg1,0x8))
+            {
+               // Brightness Up
+               Notify(\_SB.PCI0.LPCB.PS2K, 0x20)
+            }
+            Else
+            {
+               // Brightness Down
+               Notify(\_SB.PCI0.LPCB.PS2K, 0x10)
+            }
+            
+            // ================
+            // Patch end
+            
             If (LNot (Arg2))
             {
-                 \RMDT.P2 ("Arg2",Arg2)
                 If (Arg0)
                 {
                     Store (CTBF (ACBL), Local0)
                     And (ShiftRight (Arg1, 0x04), 0x0F, Local1)
-                    \RMDT.P2 ("Arg0",Arg0)
-                    \RMDT.P2 ("Local0",Local0)
-                    \RMDT.P2 ("Local1",Local1)
                 }
                 Else
                 {
                     Store (CTBF (DCBL), Local0)
                     And (Arg1, 0x0F, Local1)
-                    \RMDT.P2 ("Local0",Local0)
-                    \RMDT.P2 ("Local1",Local1)
                 }
 
                 Store (G_DB (Local0, Local1), Local1)
-                            \RMDT.P2 ("Local1",Local1)
-                    \RMDT.P2 ("Local1_G_DB",Local1)
 
                 If (Local1)
                 {
                     Store (Local1, BRTL)
-                    \RMDT.P2 ("BRTL",BRTL)
                     \_SB.PCI0.IGPU.AINT (One, BRTL)
                 }
             }
