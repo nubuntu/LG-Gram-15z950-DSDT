@@ -12947,11 +12947,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 Store(LBRI, Local0)
                 Store(PRM0, Local1)
                 Store(PRM1, Local2)
-                
-                \RMDT.P2 ("Local0",Local0)
-                \RMDT.P2 ("Local1",Local1)
-                \RMDT.P2 ("Local2",Local2)
-                
+                                
                 If(LEqual(Local0,Local1)){
                     If(LNotEqual(Local2,0x20)){
                         Store(0x10,Local2);
@@ -12962,12 +12958,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     }Else{
                         Store(0x20,Local2)                
                     }
-                }
-                
+                }   
+                             
                 Store(Local0,PRM0)
                 Store(Local2,PRM1)
                 Notify(\_SB.PCI0.LPCB.PS2K, Local2)            
-
             }
 
             Method (_Q41, 0, NotSerialized)  // _Qxx: EC Query
