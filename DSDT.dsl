@@ -12943,24 +12943,26 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (_Q40, 0, Serialized)  // _Qxx: EC Query
             {
-                \RMDT.P1 ("EC _Q40 enter")
-                Store (KBDB, Local0)
-                If (LEqual (Local0, 0x07))
-                {
-                    Notify (PS2K, 0x0405)
-                }
-
-                If (LEqual (Local0, 0x08))
-                {
-                    Notify (PS2K, 0x0406)
-                }
-
-                If (LEqual (Local0, 0x04))
-                {
-                    Notify (PS2K, 0x046E)
-                }
-
-                \RMDT.P1 ("EC _Q40 exit")
+                
+                Store(LBRI, Local0)
+                Store(PRM0, Local1)
+                Store(PRM1, Local2)
+                                
+                If(LEqual(Local0,Local1)){
+                    If(LNotEqual(Local2,0x20)){
+                        Store(0x10,Local2);
+                    }
+                }Else{
+                    If(LGreater(Local0,Local1)){                    
+                        Store(0x10,Local2)
+                    }Else{
+                        Store(0x20,Local2)                
+                    }
+                }   
+                             
+                Store(Local0,PRM0)
+                Store(Local2,PRM1)
+                Notify(\_SB.PCI0.LPCB.PS2K, Local2)            
             }
 
             Method (_Q41, 0, NotSerialized)  // _Qxx: EC Query
@@ -26535,10 +26537,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Name (CSST, Zero)
         Method (SBRT, 0, Serialized)
         {
+            \RMDT.P1 ("Method SBRT start...")
+
             Acquire (MUTX, 0xFFFF)
             Store (\_SB.PCI0.LPCB.H_EC.LBRI, Local0)
+            
+            \RMDT.P2 ("Local0 in method SBRT",Local0)
+            
             Release (MUTX)
             SPBE (PWRS, Local0, Zero)
+            
+            \RMDT.P1 ("Method SBRT end...")
         }
 
         Method (SBRR, 0, Serialized)
@@ -26579,27 +26588,89 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
         Method (SPBE, 3, NotSerialized)
         {
+            \RMDT.P1 ("Method SPBE start...")
+            \RMDT.P2 ("Arg0",Arg0)
+            \RMDT.P2 ("Arg1",Arg1)
+            \RMDT.P2 ("Arg2",Arg2)
+            \RMDT.P2 ("PRM0",PRM0)
+            
             Store (Arg1, CBRT)
-            If (LNot (Arg2))
+            // Arg1 value is 0x8 to 0x88 (0x8,0x18,0x28,0x38,0x48,0x58,0x68,0x78,0x88) 
+            // PRM0 is unused EC Field to compare with Arg1 to get correct FN + Key direction
+            // Patch begin                                                              
+            //===============
+            
+            
+            If(LEqual(Arg1,PRM0))
             {
+                If(LEqual(Arg1,0x8))
+                {
+                   // Reach bottom of limit (0x8)
+                   // Brightness down
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x20)            
+                }
+                Else
+                {
+                    If(LEqual(Arg1,0x88))
+                    {
+                       // Reach top of limit (0x88)
+                       // Brightness Up
+                       Notify(\_SB.PCI0.LPCB.PS2K, 0x10)            
+                    }
+                }
+            }
+            Else
+            {
+                If(LGreater(Arg1,PRM0))
+                {
+                   // Arg1 > PRM0, It must me UP
+                   // Brightness Up
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x10)            
+                }
+                Else
+                {
+                   // Arg 1 < PRM0, pretty sure it is down
+                   // Brightness Down
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x20)            
+                }    
+            }
+            
+            // Save Arg1 to PRM for later use
+            Store(Arg1,PRM0)
+            
+            // ================
+            // Patch end
+            
+            If (LNot (Arg2))
+            {                
+                \RMDT.P1 ("Arg2 is false")
                 If (Arg0)
                 {
+                    \RMDT.P1 ("Arg0 is true")                                        
                     Store (CTBF (ACBL), Local0)
                     And (ShiftRight (Arg1, 0x04), 0x0F, Local1)
                 }
                 Else
-                {
+                {                    
+                    \RMDT.P1 ("Arg0 is false")                                        
                     Store (CTBF (DCBL), Local0)
                     And (Arg1, 0x0F, Local1)
                 }
+                
+                \RMDT.P2 ("Local0",Local0)                                        
+                \RMDT.P2 ("Local1",Local1)                                        
 
                 Store (G_DB (Local0, Local1), Local1)
+                \RMDT.P2 ("Local1 from G_DB(Local0,Local1)",Local1)                                        
                 If (Local1)
                 {
+                    \RMDT.P1 ("Local1 is true")                                        
                     Store (Local1, BRTL)
+                    \RMDT.P2 ("BRTL",BRTL)                                        
                     \_SB.PCI0.IGPU.AINT (One, BRTL)
                 }
             }
+            \RMDT.P1 ("Method SPBE end...")
         }
 
         Method (WPC0, 2, NotSerialized)
