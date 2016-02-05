@@ -20,6 +20,9 @@
  */
 DefinitionBlock ("SSDT-1.aml", "SSDT", 1, "LGE   ", "FwiTable", 0x00001000)
 {
+    External (RMDT, DeviceObj)
+    External (RMDT.P1, MethodObj)
+    External (RMDT.P2, MethodObj)
 
     External (_SB_.PCI0.LPCB.H_EC, DeviceObj)
     External (_SB_.PCI0.LPCB.H_EC.BCEL, FieldUnitObj)

@@ -42,6 +42,10 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
     
     External (HDOS, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
     External (HNOT, MethodObj)    // Warning: Unresolved method, guessing 1 arguments
+ 
+    External (RMDT, DeviceObj)
+    External (RMDT.P1, MethodObj)
+    External (RMDT.P2, MethodObj)
 
     External (_SB_.PCI0, DeviceObj)
     External (_SB_.PCI0.AR02, MethodObj)    // 0 Arguments
@@ -3307,50 +3311,70 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
 
         Method (AINT, 2, NotSerialized)
         {
+            \RMDT.P1 ("Method AINT start...")                                                    
+            \RMDT.P2 ("Arg0",Arg0)                                                                                                        
+            \RMDT.P2 ("TCHE",TCHE)
+            \RMDT.P2 ("CPFM",CPFM)
+            \RMDT.P2 ("EPFM",EPFM)
             If (LNot (And (TCHE, ShiftLeft (One, Arg0))))
             {
+                \RMDT.P2 ("Return One",One)                                                                                                        
                 Return (One)
             }
 
             If (PARD ())
             {
+                \RMDT.P2 ("Return One",One)                                                                                                        
                 Return (One)
             }
 
             If (LAnd (LGreaterEqual (Arg0, 0x05), LLessEqual (Arg0, 0x07)))
             {
+                \RMDT.P1 ("LAnd (LGreaterEqual (Arg0, 0x05), LLessEqual (Arg0, 0x07))")                                                                                                        
                 Store (ShiftLeft (One, Arg0), ASLC)
                 Store (One, ASLE)
                 Store (Zero, Local2)
+                \RMDT.P2 ("ASLC",ASLC)                                                                                                        
+                \RMDT.P2 ("ASLE",ASLE)                                                                                                        
+                \RMDT.P2 ("Local2",Local2)                                                                                                        
                 While (LAnd (LLess (Local2, 0xFA), LNotEqual (ASLC, Zero)))
                 {
                     Sleep (0x04)
                     Increment (Local2)
                 }
-
+                \RMDT.P2 ("Local2 After Increment",Local2)                                                                                                        
                 Return (Zero)
             }
 
             If (LEqual (Arg0, 0x02))
             {
+                \RMDT.P1 ("LEqual (Arg0, 0x02)")                                                                                                        
                 If (CPFM)
                 {
+                    \RMDT.P1 ("CPFM is true")                                                                                                        
                     And (CPFM, 0x0F, Local0)
                     And (EPFM, 0x0F, Local1)
+                    \RMDT.P2 ("Local0",Local0)
+                    \RMDT.P2 ("Local1",Local1)
                     If (LEqual (Local0, One))
                     {
+                        \RMDT.P1 ("LEqual (Local0, One)")
                         If (And (Local1, 0x06))
                         {
-                            Store (0x06, PFIT)
+                            \RMDT.P1 ("And (Local1, 0x06)")
+                            Store (0x06, PFIT)                    
                         }
                         Else
                         {
+                            \RMDT.P1 ("NOT => And (Local1, 0x06)")
                             If (And (Local1, 0x08))
                             {
+                                \RMDT.P1 ("And (Local1, 0x08)")
                                 Store (0x08, PFIT)
                             }
                             Else
                             {
+                                \RMDT.P1 ("NOT => And (Local1, 0x08)")
                                 Store (One, PFIT)
                             }
                         }
@@ -3358,18 +3382,23 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
 
                     If (LEqual (Local0, 0x06))
                     {
+                        \RMDT.P1 ("LEqual (Local0, 0x06)")
                         If (And (Local1, 0x08))
                         {
+                            \RMDT.P1 ("And (Local1, 0x08)")
                             Store (0x08, PFIT)
                         }
                         Else
                         {
+                            \RMDT.P1 ("NOT => And (Local1, 0x08)")
                             If (And (Local1, One))
                             {
+                                \RMDT.P1 ("And (Local1, One)")
                                 Store (One, PFIT)
                             }
                             Else
                             {
+                                \RMDT.P1 ("NOT => And (Local1, One)")
                                 Store (0x06, PFIT)
                             }
                         }
@@ -3377,18 +3406,23 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
 
                     If (LEqual (Local0, 0x08))
                     {
+                        \RMDT.P1 ("LEqual (Local0, 0x08)")
                         If (And (Local1, One))
                         {
+                           \RMDT.P1 ("And (Local1, One)")
                             Store (One, PFIT)
                         }
                         Else
                         {
+                           \RMDT.P1 ("NOT => And (Local1, One)")
                             If (And (Local1, 0x06))
                             {
+                                \RMDT.P1 ("LEqual (Local0, 0x06)")
                                 Store (0x06, PFIT)
                             }
                             Else
                             {
+                                \RMDT.P1 ("NOT => LEqual (Local0, 0x06)")
                                 Store (0x08, PFIT)
                             }
                         }
@@ -3396,35 +3430,49 @@ DefinitionBlock ("SSDT-9.aml", "SSDT", 2, "LGE   ", "SaSsdt ", 0x00003000)
                 }
                 Else
                 {
+                    \RMDT.P1 ("CPFM is false")                                                                                                        
                     XOr (PFIT, 0x07, PFIT)
                 }
 
                 Or (PFIT, 0x80000000, PFIT)
                 Store (0x04, ASLC)
+                \RMDT.P2 ("PFIT",PFIT)
             }
             Else
             {
+                \RMDT.P1 ("NOT => LEqual (Arg0, 0x02)")                                                                                                        
                 If (LEqual (Arg0, One))
                 {
+                    \RMDT.P1 ("LEqual (Arg0, One)")                                                                                                        
                     Store (Divide (Multiply (Arg1, 0xFF), 0x64, ), BCLP)
                     Or (BCLP, 0x80000000, BCLP)
                     Store (0x02, ASLC)
+                    \RMDT.P2 ("BCLP",BCLP)                                                                                                        
+                    \RMDT.P2 ("ASLC",ASLC)                                                                                                        
                 }
                 Else
                 {
+                    \RMDT.P1 ("NOT => LEqual (Arg0, One)")                                                                                                        
                     If (LEqual (Arg0, Zero))
                     {
+                        \RMDT.P1 ("LEqual (Arg0, Zero)")                                                                                                        
                         Store (Arg1, ALSI)
                         Store (One, ASLC)
+                        \RMDT.P2 ("ALSI",ALSI)                                                                                                        
+                        \RMDT.P2 ("ASLC",ASLC)                                                                                                        
                     }
                     Else
                     {
+                        \RMDT.P1 ("NOT => LEqual (Arg0, Zero)")                                                                                                        
+                        \RMDT.P2 ("Return One",One)                                                                                                        
                         Return (One)
                     }
                 }
             }
 
             Store (One, ASLE)
+            \RMDT.P2 ("ASLE",ASLE)                                                                                                        
+            \RMDT.P1 ("Method AINT end...")                                                    
             Return (Zero)
         }
 
