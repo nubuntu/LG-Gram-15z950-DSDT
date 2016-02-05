@@ -12943,54 +12943,30 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (_Q40, 0, Serialized)  // _Qxx: EC Query
             {
-                \RMDT.P1 ("EC _Q40 enter")
-                \RMDT.P1 ("EC _Q40 enter")
-                \RMDT.P2 ("ECAV",ECAV)
-                \RMDT.P2 ("LGEC",LGEC)
-                P8XH (Zero, 0x40)
-                If (ECAV)
-                {
-                    If (LEqual (^^^HDEF.DCKS, One))
-                    {
-                        If (LEqual (^^^HDEF.DCKM, Zero))
-                        {
-                            Store (One, ^^^HDEF.DCKA)
-                            Stall (0x32)
-                            While (LNotEqual (^^^HDEF.DCKM, One))
-                            {
-                                Stall (0x32)
-                            }
-                        }
+                
+                Store(LBRI, Local0)
+                Store(PRM0, Local1)
+                Store(PRM1, Local2)
+                
+                \RMDT.P2 ("Local0",Local0)
+                \RMDT.P2 ("Local1",Local1)
+                \RMDT.P2 ("Local2",Local2)
+                
+                If(LEqual(Local0,Local1)){
+                    If(LNotEqual(Local2,0x20)){
+                        Store(0x10,Local2);
                     }
-
-                    Sleep (0x03E8)
-                    Store (DKSM, SSMP)
-                    Store (One, DSTS)
-                    Sleep (0x03E8)
-                    Notify (^^^DOCK, Zero)
-                    If (LAnd (CondRefOf (^VGBI._STA), LEqual (And (^VGBI._STA (), One), One)))
-                    {
-                        Or (PB1E, 0x10, PB1E)
-                        ^VGBI.UPBT (0x07, One)
-                        ADBG ("Notify 0xCA")
-                        Notify (VGBI, 0xCA)
-                    }
-
-                    If (IGDS)
-                    {
-                        ^^^IGPU.GDCK (One)
+                }Else{
+                    If(LGreater(Local0,Local1)){                    
+                        Store(0x10,Local2)
+                    }Else{
+                        Store(0x20,Local2)                
                     }
                 }
-                Else
-                {
-                    If (LGEC)
-                    {
-                        SBRT () // <= ECAV always false and LGEC always true, so this function always being executed
-                        Store (EVBR, ^MAP1.CAUS)
-                        \RMDT.P2 ("EVBR",EVBR)
-                        Notify (MAP1, 0x80)
-                    }
-                }
+                
+                Store(Local0,PRM0)
+                Store(Local2,PRM1)
+                Notify(\_SB.PCI0.LPCB.PS2K, Local2)            
 
             }
 
