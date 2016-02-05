@@ -12943,24 +12943,49 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (_Q40, 0, Serialized)  // _Qxx: EC Query
             {
-                \RMDT.P1 ("EC _Q40 enter")
-                Store (KBDB, Local0)
-                If (LEqual (Local0, 0x07))
+                P8XH (Zero, 0x40)
+                If (ECAV)
                 {
-                    Notify (PS2K, 0x0405)
-                }
+                    If (LEqual (^^^HDEF.DCKS, One))
+                    {
+                        If (LEqual (^^^HDEF.DCKM, Zero))
+                        {
+                            Store (One, ^^^HDEF.DCKA)
+                            Stall (0x32)
+                            While (LNotEqual (^^^HDEF.DCKM, One))
+                            {
+                                Stall (0x32)
+                            }
+                        }
+                    }
 
-                If (LEqual (Local0, 0x08))
+                    Sleep (0x03E8)
+                    Store (DKSM, SSMP)
+                    Store (One, DSTS)
+                    Sleep (0x03E8)
+                    Notify (^^^DOCK, Zero)
+                    If (LAnd (CondRefOf (^VGBI._STA), LEqual (And (^VGBI._STA (), One), One)))
+                    {
+                        Or (PB1E, 0x10, PB1E)
+                        ^VGBI.UPBT (0x07, One)
+                        ADBG ("Notify 0xCA")
+                        Notify (VGBI, 0xCA)
+                    }
+
+                    If (IGDS)
+                    {
+                        ^^^IGPU.GDCK (One)
+                    }
+                }
+                Else
                 {
-                    Notify (PS2K, 0x0406)
+                    If (LGEC)
+                    {
+                        SBRT ()
+                        Store (EVBR, ^MAP1.CAUS)
+                        Notify (MAP1, 0x80)
+                    }
                 }
-
-                If (LEqual (Local0, 0x04))
-                {
-                    Notify (PS2K, 0x046E)
-                }
-
-                \RMDT.P1 ("EC _Q40 exit")
             }
 
             Method (_Q41, 0, NotSerialized)  // _Qxx: EC Query
@@ -26580,23 +26605,47 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Method (SPBE, 3, NotSerialized)
         {
             Store (Arg1, CBRT)
+
+                            
+                    If (LEqual(Arg1,0x8))
+                    {
+                        // Brightness Up
+                        Notify(\_SB.PCI0.LPCB.PS2K, 0x20)
+                    }
+                    Else
+                    {
+                        // Brightness Down
+                        Notify(\_SB.PCI0.LPCB.PS2K, 0x10)
+                    }
+                    
+                    \RMDT.P2 ("Arg1",Arg1)
             If (LNot (Arg2))
             {
+                 \RMDT.P2 ("Arg2",Arg2)
                 If (Arg0)
                 {
                     Store (CTBF (ACBL), Local0)
                     And (ShiftRight (Arg1, 0x04), 0x0F, Local1)
+                    \RMDT.P2 ("Arg0",Arg0)
+                    \RMDT.P2 ("Local0",Local0)
+                    \RMDT.P2 ("Local1",Local1)
                 }
                 Else
                 {
                     Store (CTBF (DCBL), Local0)
                     And (Arg1, 0x0F, Local1)
+                    \RMDT.P2 ("Local0",Local0)
+                    \RMDT.P2 ("Local1",Local1)
                 }
 
                 Store (G_DB (Local0, Local1), Local1)
+                            \RMDT.P2 ("Local1",Local1)
+                    \RMDT.P2 ("Local1_G_DB",Local1)
+
                 If (Local1)
                 {
                     Store (Local1, BRTL)
+                    \RMDT.P2 ("BRTL",BRTL)
                     \_SB.PCI0.IGPU.AINT (One, BRTL)
                 }
             }
