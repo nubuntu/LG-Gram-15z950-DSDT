@@ -3915,8 +3915,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
             {
-                //Return (GPRW (0x6D, 0x04))
-                Return (GPRW (0x6D, 0x00))                
+                Return (GPRW (0x6D, 0x04))
             }
 
             Method (_DSW, 3, NotSerialized)  // _DSW: Device Sleep Wake
@@ -15845,8 +15844,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     0x01,               // Alignment
                     0x08,               // Length
                     )
-                //IRQNoFlags ()
-                  //  {8}
+                IRQNoFlags ()
+                    {8}
             })
         }
 
@@ -26861,7 +26860,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Name (_HID, "NULE0000")  // _HID: Hardware ID
         Name (MAC, Buffer (0x06)
         {
-             0x55, 0xAD, 0xA7, 0xD4, 0x5C, 0x75             
+             0x11, 0x22, 0x33, 0x44, 0x55, 0x66             
         })
         Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
         {
@@ -26894,6 +26893,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     "RM-NullEthernet-1001"
                 }, 
+
                 "device_type", 
                 Buffer (0x09)
                 {
