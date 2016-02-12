@@ -26860,7 +26860,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Name (_HID, "NULE0000")  // _HID: Hardware ID
         Name (MAC, Buffer (0x06)
         {
-             0x11, 0x22, 0x33, 0x44, 0x55, 0x66             
+             0x55, 0xAD, 0xA7, 0xD4, 0x5C, 0x75             
         })
         Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
         {
