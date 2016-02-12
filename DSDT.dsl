@@ -2969,8 +2969,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     Method (LXDH, 0, NotSerialized)
     {
         \_SB.PCI0.XHC.GPEH ()
-        \_SB.PCI0.EHC1.GPEH ()
-        \_SB.PCI0.EHC2.GPEH ()
+        \_SB.PCI0.EH01.GPEH ()
+        \_SB.PCI0.EH02.GPEH ()
         \_SB.PCI0.HDEF.GPEH ()
         \_SB.PCI0.GLAN.GPEH ()
     }
@@ -3939,7 +3939,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             }
         }
 
-        Device (EHC1)
+        Device (EH01)
         {
             Name (_ADR, 0x001D0000)  // _ADR: Address
             OperationRegion (PWKE, PCI_Config, Zero, 0x0100)
@@ -3968,7 +3968,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LAnd (PMEE, PMES))
                 {
                     Store (One, PMES)
-                    Notify (EHC1, 0x02)
+                    Notify (EH01, 0x02)
                 }
             }
 
@@ -4277,7 +4277,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             }
         }
 
-        Device (EHC2)
+        Device (EH02)
         {
             Name (_ADR, 0x001A0000)  // _ADR: Address
             OperationRegion (PWKE, PCI_Config, Zero, 0x0100)
@@ -4306,7 +4306,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LAnd (PMEE, PMES))
                 {
                     Store (One, PMES)
-                    Notify (EHC2, 0x02)
+                    Notify (EH02, 0x02)
                 }
             }
 
@@ -19198,7 +19198,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         {
             ^RP07.PXSX, 
             ^RP08.PXSX, 
-            EHC1, 
+            EH01, 
             SAT0, 
             HDEF
         })
@@ -20957,7 +20957,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR11)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR11)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20990,7 +20990,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR12)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR12)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21023,7 +21023,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR13)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR13)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21062,7 +21062,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR14)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR14)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21095,7 +21095,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR15)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR15)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21128,7 +21128,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR16)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR16)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21161,7 +21161,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR17)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR17)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21194,7 +21194,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR18)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR18)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21227,7 +21227,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR11)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR11)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21260,7 +21260,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR12)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR12)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21293,7 +21293,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR13)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR13)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21326,7 +21326,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR14)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR14)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21359,7 +21359,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR15)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR15)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21392,7 +21392,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR16)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR16)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
