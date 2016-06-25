@@ -4272,10 +4272,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
         }
 
         Device (EH02)
@@ -5133,10 +5134,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (XWAK, 0, Serialized)
             {
-                If (LOr (LEqual (^^LPCB.XUSB, One), LEqual (XRST, One)))
-                {
-                    XSEL ()
-                }
+                Return(0)
             }
 
             Device (RHUB)
@@ -8621,10 +8619,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x04))
-            }
+                0x6D,
+                Zero
+            })
         }
 
         Device (ADSP)
@@ -27032,5 +27031,6 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
     Method (B1B2, 2, NotSerialized) { Return (Or (Arg0, ShiftLeft (Arg1, 8))) }
+
 }
 
