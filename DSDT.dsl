@@ -3913,10 +3913,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 PMES,   1
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x04))
-            }
+                0x6D,
+                Zero
+            })
 
             Method (_DSW, 3, NotSerialized)  // _DSW: Device Sleep Wake
             {
@@ -4491,10 +4492,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
         }
     }
 
@@ -4537,10 +4539,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 PR3M,   32
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
 
             Method (_DSW, 3, NotSerialized)  // _DSW: Device Sleep Wake
             {
