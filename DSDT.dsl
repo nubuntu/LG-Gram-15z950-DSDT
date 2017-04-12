@@ -5,7 +5,7 @@
  * 
  * Disassembling to non-symbolic legacy ASL operators
  *
- * Disassembly of DSDT.aml, Sun Jan 31 04:12:11 2016
+ * Disassembly of DSDT.aml, Tue Feb  2 23:27:59 2016
  *
  * Original Table Header:
  *     Signature        "DSDT"
@@ -21,8 +21,8 @@
 DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 {
     /*
-     * iASL Warning: There were 28 external control methods found during
-     * disassembly, but only 11 were resolved (17 unresolved). Additional
+     * iASL Warning: There were 32 external control methods found during
+     * disassembly, but only 15 were resolved (17 unresolved). Additional
      * ACPI tables may be required to properly disassemble the code. This
      * resulting disassembler output file may not compile because the
      * disassembler did not know how many arguments to assign to the
@@ -57,6 +57,15 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     External (PS2X, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
     External (PS3X, MethodObj)    // Warning: Unresolved method, guessing 0 arguments
 
+    /*
+     * External declarations that were imported from
+     * the reference file [refs.txt]
+     */
+    External (_GPE.MMTB, MethodObj)    // 0 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECRD, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.LPCB.H_EC.ECWT, MethodObj)    // 2 Arguments
+    External (_SB_.PCI0.PEG0.PEGP.SGPO, MethodObj)    // 2 Arguments
+
     External (_PR_.BGIA, FieldUnitObj)
     External (_PR_.BGMA, FieldUnitObj)
     External (_PR_.BGMS, FieldUnitObj)
@@ -83,21 +92,21 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     External (_SB_.PCI0.B0D3.ABAR, FieldUnitObj)
     External (_SB_.PCI0.B0D3.BARA, IntObj)
     External (_SB_.PCI0.EPON, MethodObj)    // 0 Arguments
-    External (_SB_.PCI0.GFX0.AINT, MethodObj)    // 2 Arguments
-    External (_SB_.PCI0.GFX0.ALSI, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.CBLV, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.CDCK, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.CLID, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.DD1F, UnknownObj)
-    External (_SB_.PCI0.GFX0.GDCK, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.GFX0.GHDS, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.GFX0.GLID, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.GFX0.GSCI, MethodObj)    // 0 Arguments
-    External (_SB_.PCI0.GFX0.GSSE, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.IUEH, MethodObj)    // 1 Arguments
-    External (_SB_.PCI0.GFX0.IUER, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.STAT, FieldUnitObj)
-    External (_SB_.PCI0.GFX0.TCHE, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.AINT, MethodObj)    // 2 Arguments
+    External (_SB_.PCI0.IGPU.ALSI, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.CBLV, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.CDCK, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.CLID, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.DD1F, UnknownObj)
+    External (_SB_.PCI0.IGPU.GDCK, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.IGPU.GHDS, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.IGPU.GLID, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.IGPU.GSCI, MethodObj)    // 0 Arguments
+    External (_SB_.PCI0.IGPU.GSSE, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.IUEH, MethodObj)    // 1 Arguments
+    External (_SB_.PCI0.IGPU.IUER, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.STAT, FieldUnitObj)
+    External (_SB_.PCI0.IGPU.TCHE, FieldUnitObj)
     External (_SB_.PCI0.LPCB.H_EC.CHRG, UnknownObj)
     External (_SB_.PCI0.LPCB.H_EC.MAP1, UnknownObj)
     External (_SB_.PCI0.LPCB.H_EC.MAP1.CA82, IntObj)
@@ -2683,9 +2692,149 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     Name (_ADR, 0x00030000)  // _ADR: Address
                 }
 
-                Device (GFX0)
+                Device (IGPU)
                 {
                     Name (_ADR, 0x00020000)  // _ADR: Address
+                    OperationRegion (RMPC, PCI_Config, 0x10, 4)
+                    Field (RMPC, AnyAcc, NoLock, Preserve)
+                    {
+                        BAR1,32,
+                    }
+                    Device (PNLF)
+                    {
+                        // normal PNLF declares (note some of this probably not necessary)
+                        Name (_ADR, Zero)
+                        Name (_HID, EisaId ("APP0002"))
+                        Name (_CID, "backlight")
+                        Name (_UID, 15)
+                        Name (_STA, 0x0B)
+                        //define hardware register access for brightness
+                        // lower nibble of BAR1 is status bits and not part of the address
+                        OperationRegion (BRIT, SystemMemory, And(^BAR1, Not(0xF)), 0xe1184)
+                        Field (BRIT, AnyAcc, Lock, Preserve)
+                        {
+                            Offset(0x48250),
+                            LEV2, 32,
+                            LEVL, 32,
+                            Offset(0x70040),
+                            P0BL, 32,
+                            Offset(0xc8250),
+                            LEVW, 32,
+                            LEVX, 32,
+                            Offset(0xe1180),
+                            PCHL, 32,
+                        }
+                        // LMAX: use 0xad9/0x56c/0x5db to force OS X value
+                        //       or use any arbitrary value
+                        //       or use 0 to capture BIOS setting
+                        Name (LMAX, 0xad9)
+                        // KMAX: defines the unscaled range in the _BCL table below
+                        Name (KMAX, 0xad9)
+                        // _INI deals with differences between native setting and desired
+                        Method (_INI, 0, NotSerialized)
+                        {
+                            // This 0xC value comes from looking what OS X initializes this
+                            // register to after display sleep (using ACPIDebug/ACPIPoller)
+                            Store(0xC0000000, LEVW)
+                            // determine LMAX to use
+                            If (LNot(LMAX)) { Store(ShiftRight(LEVX,16), LMAX) }
+                            If (LNot(LMAX)) { Store(KMAX, LMAX) }
+                            If (LNotEqual(LMAX, KMAX))
+                            {
+                                // Scale all the values in _BCL to the PWM max in use
+                                Store(0, Local0)
+                                While (LLess(Local0, SizeOf(_BCL)))
+                                {
+                                    Store(DerefOf(Index(_BCL,Local0)), Local1)
+                                    Divide(Multiply(Local1,LMAX), KMAX,, Local1)
+                                    Store(Local1, Index(_BCL,Local0))
+                                    Increment(Local0)
+                                }
+                                // Also scale XRGL and XRGH values
+                                Divide(Multiply(XRGL,LMAX), KMAX,, XRGL)
+                                Divide(Multiply(XRGH,LMAX), KMAX,, XRGH)
+                            }
+                            // adjust values to desired LMAX
+                            Store(ShiftRight(LEVX,16), Local1)
+                            If (LNotEqual(Local1, LMAX))
+                            {
+                                Store(And(LEVX,0xFFFF), Local0)
+                                If (LOr(LNot(Local0),LNot(Local1))) { Store(LMAX, Local0) Store(LMAX, Local1) }
+                                Divide(Multiply(Local0,LMAX), Local1,, Local0)
+                                //REVIEW: wait for vblank before setting new PWM config
+                                //Store(P0BL, Local7)
+                                //While (LEqual (P0BL, Local7)) {}
+                                Store(Or(Local0,ShiftLeft(LMAX,16)), LEVX)
+                            }
+                        }
+                        // _BCM/_BQC: set/get for brightness level
+                        Method (_BCM, 1, NotSerialized)
+                        {
+                            // store new backlight level
+                            Store(Match(_BCL, MGE, Arg0, MTR, 0, 2), Local0)
+                            If (LEqual(Local0, Ones)) { Subtract(SizeOf(_BCL), 1, Local0) }
+                            Store(Or(DerefOf(Index(_BCL,Local0)),ShiftLeft(LMAX,16)), LEVX)
+                        }
+                        Method (_BQC, 0, NotSerialized)
+                        {
+                            Store(Match(_BCL, MGE, And(LEVX, 0xFFFF), MTR, 0, 2), Local0)
+                            If (LEqual(Local0, Ones)) { Subtract(SizeOf(_BCL), 1, Local0) }
+                            Return(DerefOf(Index(_BCL, Local0)))
+                        }
+                        Method (_DOS, 1, NotSerialized)
+                        {
+                            // Note: Some systems have this defined in DSDT, so uncomment
+                            // the next line if that is the case.
+                            External(^^_DOS, MethodObj)
+                            ^^_DOS(Arg0)
+                        }
+                        // extended _BCM/_BQC for setting "in between" levels
+                        Method (XBCM, 1, NotSerialized)
+                        {
+                            // store new backlight level
+                            If (LGreater(Arg0, XRGH)) { Store(XRGH, Arg0) }
+                            If (LAnd(Arg0, LLess(Arg0, XRGL))) { Store(XRGL, Arg0) }
+                            Store(Or(Arg0,ShiftLeft(LMAX,16)), LEVX)
+                        }
+                        Method (XBQC, 0, NotSerialized)
+                        {
+                            Store(And(LEVX,0xFFFF), Local0)
+                            If (LGreater(Local0, XRGH)) { Store(XRGH, Local0) }
+                            If (LAnd(Local0, LLess(Local0, XRGL))) { Store(XRGL, Local0) }
+                            Return(Local0)
+                        }
+                        // Set XOPT bit 0 to disable smooth transitions
+                        // Set XOPT bit 1 to wait for native BacklightHandler
+                        // Set XOPT bit 2 to force use of native BacklightHandler
+                        Name (XOPT, 0x02)
+                        // XRGL/XRGH: defines the valid range
+                        Name (XRGL, 25)
+                        Name (XRGH, 2777)
+                        // _BCL: returns list of valid brightness levels
+                        // first two entries describe ac/battery power levels
+                        Name (_BCL, Package()
+                        {
+                            2777,
+                            748,
+                            0,
+                            35, 39, 44, 50,
+                            58, 67, 77, 88,
+                            101, 115, 130, 147,
+                            165, 184, 204, 226,
+                            249, 273, 299, 326,
+                            354, 383, 414, 446,
+                            479, 514, 549, 587,
+                            625, 665, 706, 748,
+                            791, 836, 882, 930,
+                            978, 1028, 1079, 1132,
+                            1186, 1241, 1297, 1355,
+                            1414, 1474, 1535, 1598,
+                            1662, 1728, 1794, 1862,
+                            1931, 2002, 2074, 2147,
+                            2221, 2296, 2373, 2452,
+                            2531, 2612, 2694, 2777,
+                        })
+                    }
                 }
 
                 Device (B0D4)
@@ -2820,8 +2969,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     Method (LXDH, 0, NotSerialized)
     {
         \_SB.PCI0.XHC.GPEH ()
-        \_SB.PCI0.EHC1.GPEH ()
-        \_SB.PCI0.EHC2.GPEH ()
+        \_SB.PCI0.EH01.GPEH ()
+        \_SB.PCI0.EH02.GPEH ()
         \_SB.PCI0.HDEF.GPEH ()
         \_SB.PCI0.GLAN.GPEH ()
     }
@@ -3764,10 +3913,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 PMES,   1
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x04))
-            }
+                0x6D,
+                Zero
+            })
 
             Method (_DSW, 3, NotSerialized)  // _DSW: Device Sleep Wake
             {
@@ -3790,7 +3940,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             }
         }
 
-        Device (EHC1)
+        Device (EH01)
         {
             Name (_ADR, 0x001D0000)  // _ADR: Address
             OperationRegion (PWKE, PCI_Config, Zero, 0x0100)
@@ -3819,7 +3969,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LAnd (PMEE, PMES))
                 {
                     Store (One, PMES)
-                    Notify (EHC1, 0x02)
+                    Notify (EH01, 0x02)
                 }
             }
 
@@ -4122,13 +4272,14 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
         }
 
-        Device (EHC2)
+        Device (EH02)
         {
             Name (_ADR, 0x001A0000)  // _ADR: Address
             OperationRegion (PWKE, PCI_Config, Zero, 0x0100)
@@ -4157,7 +4308,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LAnd (PMEE, PMES))
                 {
                     Store (One, PMES)
-                    Notify (EHC2, 0x02)
+                    Notify (EH02, 0x02)
                 }
             }
 
@@ -4342,10 +4493,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
         }
     }
 
@@ -4388,10 +4540,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 PR3M,   32
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x03))
-            }
+                0x6D,
+                Zero
+            })
 
             Method (_DSW, 3, NotSerialized)  // _DSW: Device Sleep Wake
             {
@@ -4981,10 +5134,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (XWAK, 0, Serialized)
             {
-                If (LOr (LEqual (^^LPCB.XUSB, One), LEqual (XRST, One)))
-                {
-                    XSEL ()
-                }
+                Return(0)
             }
 
             Device (RHUB)
@@ -8469,10 +8619,11 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
             }
 
-            Method (_PRW, 0, NotSerialized)  // _PRW: Power Resources for Wake
+            Name (_PRW, Package(0x02)  // _PRW: Power Resources for Wake
             {
-                Return (GPRW (0x6D, 0x04))
-            }
+                0x6D,
+                Zero
+            })
         }
 
         Device (ADSP)
@@ -11246,17 +11397,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 TSLT,   8, 
                 TSSR,   8, 
                 B1CM,   8, 
-                B1DC,   16, 
-                B1RC,   16, 
-                B1FC,   16, 
-                B1FV,   16, 
-                B1DI,   16, 
-                B1CI,   16, 
-                B2RC,   16, 
-                B2FC,   16, 
-                B2FV,   16, 
-                B2DI,   16, 
-                B2CI,   16, 
+                BDC0,8,BDC1,8, 
+                BRC0,8,BRC1,8, 
+                BFC0,8,BFC1,8, 
+                BFV0,8,BFV1,8, 
+                BDI0,8,BDI1,8, 
+                BCI0,8,BCI1,8, 
+                BRC2,8,BRC3,8, 
+                BFC2,8,BFC3,8, 
+                BFV2,8,BFV3,8, 
+                BDI2,8,BDI3,8, 
+                BCI2,8,BCI3,8, 
                 CPAP,   16, 
                 BKAP,   16, 
                 PLAP,   16, 
@@ -11326,7 +11477,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 SPT2,   1, 
                 Offset (0xC9), 
                 Offset (0xD3), 
-                B1DV,   16, 
+                BDV0,8,BDV1,8, 
                 Offset (0xD7), 
                 B1ML,   8, 
                 B1MH,   8, 
@@ -11508,7 +11659,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 BPVL,   8, 
                 BTP,    16, 
                 CBT,    16, 
-                BMFG,   72, 
+                BMF0,72,//BMFG,72,//0x9A 
                 TBA7,   8, 
                 TBA8,   8, 
                 TBA9,   8, 
@@ -12114,16 +12265,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B1FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC0,BFC1))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, One))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x02))
-                            Store (B1DV, Index (BPKG, 0x04))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPKG, 0x04))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPKG, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPKG, 0x06))
                             Store (0x0100, Index (BPKG, 0x07))
                             Store (0x40, Index (BPKG, 0x08))
@@ -12160,16 +12311,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B1FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC0,BFC1))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x02))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPKG, 0x03))
-                            Store (ECRD (RefOf (B1DV)), Index (BPKG, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPKG, 0x05))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPKG, 0x06))
-                            Store (Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPKG, 0x07))
                             Store (0x0100, Index (BPKG, 0x08))
                             Store (0x40, Index (BPKG, 0x09))
@@ -12195,20 +12346,20 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Store (And (ECRD (RefOf (B1ST)), 0x07), Index (PKG1, Zero))
                         If (And (ECRD (RefOf (B1ST)), One))
                         {
-                            Store (Multiply (ECRD (RefOf (B1DI)), ECRD (RefOf (B1FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BDI0,BDI1)), ECRD(B1B2(BFV0,BFV1))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG1, One))
                         }
                         Else
                         {
-                            Store (Multiply (ECRD (RefOf (B1CI)), ECRD (RefOf (B1FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BCI0,BCI1)), ECRD(B1B2(BFV0,BFV1))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG1, One))
                         }
 
-                        Store (Divide (Multiply (ECRD (RefOf (B1RC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                        Store (Divide (Multiply (ECRD(B1B2(BRC0,BRC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                             ), Index (PKG1, 0x02))
-                        Store (ECRD (RefOf (B1FV)), Index (PKG1, 0x03))
+                        Store (ECRD(B1B2(BFV0,BFV1)), Index (PKG1, 0x03))
                     }
 
                     Return (PKG1)
@@ -12218,11 +12369,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (ECAV)
                     {
-                        If (LAnd (LNotEqual (ECRD (RefOf (B1FC)), Zero), LNotEqual (ECRD (RefOf (
-                            B1FV)), Zero)))
+                        If (LAnd (LNotEqual (ECRD(B1B2(BFC0,BFC1)), Zero), LNotEqual (ECRD(B1B2(BFV0,BFV1)), Zero)))
                         {
-                            Store (Divide (Multiply (Arg2, 0x64), Divide (Multiply (ECRD (RefOf (B1FC)), ECRD (
-                                RefOf (B1FV))), 0x03E8, ), ), Local0)
+                            Store (Divide (Multiply (Arg2, 0x64), Divide (Multiply (ECRD(B1B2(BFC0,BFC1)), ECRD(B1B2(BFV0,BFV1))), 0x03E8, ), ), Local0)
                             Add (Local0, One, Local0)
                             ECWT (Local0, RefOf (BTP1))
                             ECMD (0x34)
@@ -12234,8 +12383,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (ECAV)
                     {
-                        If (LAnd (LNotEqual (ECRD (RefOf (B1FC)), Zero), LNotEqual (ECRD (RefOf (
-                            B1FV)), Zero)))
+                        If (LAnd (LNotEqual (ECRD(B1B2(BFC0,BFC1)), Zero), LNotEqual (ECRD(B1B2(BFV0,BFV1)), Zero)))
                         {
                             ECWT (Arg0, RefOf (BTPW))
                         }
@@ -12322,18 +12470,18 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     })
                     If (ECAV)
                     {
-                        If (LAnd (LAnd (ECRD (RefOf (B1DV)), ECRD (RefOf (B2FC))), ECRD (RefOf (B1DC))))
+                        If (LAnd (LAnd (ECRD(B1B2(BDV0,BDV1)), ECRD(B1B2(BFC2,BFC3))), ECRD(B1B2(BDC0,BDC1))))
                         {
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPK2, One))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x03E8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x03E8, 
                                 ), Index (BPK2, 0x02))
-                            Store (B1DV, Index (BPK2, 0x04))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x2710, 
+                            Store (ECRD(B1B2(BDV0,BDV1)), Index (BPK2, 0x04))
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x2710, 
                                 ), Index (BPK2, 0x05))
-                            Store (Divide (Multiply (ECRD (RefOf (B2FC)), ECRD (RefOf (B1DV))), 0x61A8, 
+                            Store (Divide (Multiply (ECRD(B1B2(BFC2,BFC3)), ECRD(B1B2(BDV0,BDV1))), 0x61A8, 
                                 ), Index (BPK2, 0x06))
-                            Store (Divide (Multiply (ECRD (RefOf (B1DC)), ECRD (RefOf (B1DV))), 0x000186A0, 
+                            Store (Divide (Multiply (ECRD(B1B2(BDC0,BDC1)), ECRD(B1B2(BDV0,BDV1))), 0x000186A0, 
                                 ), Index (BPK2, 0x07))
                         }
                     }
@@ -12355,20 +12503,20 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Store (And (ECRD (RefOf (B2ST)), 0x07), Index (PKG2, Zero))
                         If (And (ECRD (RefOf (B2ST)), One))
                         {
-                            Store (Multiply (ECRD (RefOf (B2DI)), ECRD (RefOf (B2FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BDI2,BDI3)), ECRD(B1B2(BFV2,BFV3))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG2, One))
                         }
                         Else
                         {
-                            Store (Multiply (ECRD (RefOf (B2CI)), ECRD (RefOf (B2FV))), Local0)
+                            Store (Multiply (ECRD(B1B2(BCI2,BCI3)), ECRD(B1B2(BFV2,BFV3))), Local0)
                             Store (Divide (Local0, 0x03E8, ), Local0)
                             Store (Local0, Index (PKG2, One))
                         }
 
-                        Store (Divide (Multiply (ECRD (RefOf (B2RC)), ECRD (RefOf (B2FV))), 0x03E8, 
+                        Store (Divide (Multiply (ECRD(B1B2(BRC2,BRC3)), ECRD(B1B2(BFV2,BFV3))), 0x03E8, 
                             ), Index (PKG2, 0x02))
-                        Store (ECRD (RefOf (B2FV)), Index (PKG2, 0x03))
+                        Store (ECRD(B1B2(BFV2,BFV3)), Index (PKG2, 0x03))
                     }
 
                     Return (PKG2)
@@ -12404,21 +12552,21 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         If (LAnd (LEqual (ALSE, 0x02), IGDS))
                         {
                             Store (ECRD (RefOf (LUXH)), Local0)
-                            Or (ShiftLeft (Local0, 0x08), ECRD (RefOf (LUXL)), ^^^GFX0.ALSI)
+                            Or (ShiftLeft (Local0, 0x08), ECRD (RefOf (LUXL)), ^^^IGPU.ALSI)
                         }
 
                         If (LEqual (ECRD (RefOf (LSTE)), Zero))
                         {
-                            Store (Zero, ^^^GFX0.CLID)
+                            Store (Zero, ^^^IGPU.CLID)
                         }
 
                         If (LEqual (ECRD (RefOf (LSTE)), One))
                         {
-                            Store (0x03, ^^^GFX0.CLID)
+                            Store (0x03, ^^^IGPU.CLID)
                         }
 
                         Store (ECRD (RefOf (LSTE)), LIDS)
-                        Store (DSTS, ^^^GFX0.CDCK)
+                        Store (DSTS, ^^^IGPU.CDCK)
                         Store (Zero, BNUM)
                         Or (BNUM, ShiftRight (And (ECRD (RefOf (B1ST)), 0x08), 0x03), BNUM)
                         Or (BNUM, ShiftRight (And (ECRD (RefOf (B2ST)), 0x08), 0x02), BNUM)
@@ -12442,7 +12590,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                             Store (One, LIDS)
                             Store (One, PWRS)
                             Store (Zero, ECAV)
-                            Store (0x03, ^^^GFX0.CLID)
+                            Store (0x03, ^^^IGPU.CLID)
                             Store (Zero, PLGE)
                             Store (One, ECON)
                             Store (One, MADT)
@@ -12455,17 +12603,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                             Store (ECOS, OTYP)
                             If (CONV)
                             {
-                                Store (ShiftLeft (LID, 0x06), ^^^GFX0.IUER)
+                                Store (ShiftLeft (LID, 0x06), ^^^IGPU.IUER)
                             }
 
                             If (LAnd (IGDS, SLID))
                             {
                                 Store (LID, LIDS)
-                                Store (0x03, ^^^GFX0.CLID)
+                                Store (0x03, ^^^IGPU.CLID)
                             }
                             Else
                             {
-                                Store (0x03, ^^^GFX0.CLID)
+                                Store (0x03, ^^^IGPU.CLID)
                                 Store (One, LIDS)
                             }
 
@@ -12797,24 +12945,26 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             Method (_Q40, 0, Serialized)  // _Qxx: EC Query
             {
-                \RMDT.P1 ("EC _Q40 enter")
-                Store (KBDB, Local0)
-                If (LEqual (Local0, 0x07))
-                {
-                    Notify (PS2K, 0x0405)
-                }
-
-                If (LEqual (Local0, 0x08))
-                {
-                    Notify (PS2K, 0x0406)
-                }
-
-                If (LEqual (Local0, 0x04))
-                {
-                    Notify (PS2K, 0x046E)
-                }
-
-                \RMDT.P1 ("EC _Q40 exit")
+                
+                Store(LBRI, Local0)
+                Store(PRM0, Local1)
+                Store(PRM1, Local2)
+                                
+                If(LEqual(Local0,Local1)){
+                    If(LNotEqual(Local2,0x20)){
+                        Store(0x10,Local2);
+                    }
+                }Else{
+                    If(LGreater(Local0,Local1)){                    
+                        Store(0x10,Local2)
+                    }Else{
+                        Store(0x20,Local2)                
+                    }
+                }   
+                             
+                Store(Local0,PRM0)
+                Store(Local2,PRM1)
+                Notify(\_SB.PCI0.LPCB.PS2K, Local2)            
             }
 
             Method (_Q41, 0, NotSerialized)  // _Qxx: EC Query
@@ -12843,7 +12993,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (IGDS)
                     {
-                        ^^^GFX0.GDCK (Zero)
+                        ^^^IGPU.GDCK (Zero)
                     }
                 }
 
@@ -12868,10 +13018,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     {
                         And (PB1E, 0xFFFFFFFFFFFFFFEF, PB1E)
                         ^VGBI.UPBT (0x07, Zero)
-                        If (CondRefOf (\_SB.PCI0.GFX0.IUER))
+                        If (CondRefOf (\_SB.PCI0.IGPU.IUER))
                         {
-                            Store (^^^GFX0.IUER, Local0)
-                            And (Local0, 0xFFFFFFFFFFFFFF7F, ^^^GFX0.IUER)
+                            Store (^^^IGPU.IUER, Local0)
+                            And (Local0, 0xFFFFFFFFFFFFFF7F, ^^^IGPU.IUER)
                         }
 
                         ADBG ("Notify 0xCB")
@@ -12881,7 +13031,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     {
                         If (IGDS)
                         {
-                            ^^^GFX0.GDCK (Zero)
+                            ^^^IGPU.GDCK (Zero)
                         }
                     }
                 }
@@ -12899,8 +13049,8 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
                         If (CONV)
                         {
-                            Store (ShiftLeft (LID, 0x06), ^^^GFX0.IUER)
-                            ^^^GFX0.IUEH (0x06)
+                            Store (ShiftLeft (LID, 0x06), ^^^IGPU.IUER)
+                            ^^^IGPU.IUEH (0x06)
                         }
                     }
                 }
@@ -12946,7 +13096,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (ECAV)
                 {
                     Store (ECRD (RefOf (LSTE)), LIDS)
-                    ^^^GFX0.GLID (LIDS)
+                    ^^^IGPU.GLID (LIDS)
                     If (LEqual (\_TZ.ETMD, Zero))
                     {
                         If (CondRefOf (\_SB.IETM))
@@ -12990,7 +13140,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     {
                         If (LAnd (IGDS, LLess (Arg1, 0x04)))
                         {
-                            ^^^GFX0.GHDS (Arg1)
+                            ^^^IGPU.GHDS (Arg1)
                         }
                     }
                     Else
@@ -13008,7 +13158,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                             }
                             Else
                             {
-                                Store (^^^GFX0.CBLV, Local0)
+                                Store (^^^IGPU.CBLV, Local0)
                                 And (Add (Local0, One), 0xFE, Local0)
                                 If (LLessEqual (Local0, 0x5A))
                                 {
@@ -13016,7 +13166,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                 }
 
                                 Store (Local0, BRTL)
-                                ^^^GFX0.AINT (One, Local0)
+                                ^^^IGPU.AINT (One, Local0)
                             }
                         }
                         Else
@@ -13034,7 +13184,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                 }
                                 Else
                                 {
-                                    Store (^^^GFX0.CBLV, Local0)
+                                    Store (^^^IGPU.CBLV, Local0)
                                     And (Add (Local0, One), 0xFE, Local0)
                                     If (LGreaterEqual (Local0, 0x0A))
                                     {
@@ -13042,7 +13192,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                     }
 
                                     Store (Local0, BRTL)
-                                    ^^^GFX0.AINT (One, Local0)
+                                    ^^^IGPU.AINT (One, Local0)
                                 }
                             }
                         }
@@ -13504,10 +13654,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                             }
                             Else
                             {
-                                If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                 {
                                     ADBG ("IUEH 0")
-                                    ^^^GFX0.IUEH (Zero)
+                                    ^^^IGPU.IUEH (Zero)
                                 }
                             }
                         }
@@ -13528,10 +13678,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                 }
                                 Else
                                 {
-                                    If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                    If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                     {
                                         ADBG ("IUEH 1")
-                                        ^^^GFX0.IUEH (One)
+                                        ^^^IGPU.IUEH (One)
                                     }
                                 }
                             }
@@ -13551,10 +13701,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                     }
                                     Else
                                     {
-                                        If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                        If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                         {
                                             ADBG ("IUEH 2")
-                                            ^^^GFX0.IUEH (0x02)
+                                            ^^^IGPU.IUEH (0x02)
                                         }
                                     }
                                 }
@@ -13574,10 +13724,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                         }
                                         Else
                                         {
-                                            If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                            If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                             {
                                                 ADBG ("IUEH 3")
-                                                ^^^GFX0.IUEH (0x03)
+                                                ^^^IGPU.IUEH (0x03)
                                             }
                                         }
                                     }
@@ -13599,10 +13749,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                             }
                                             Else
                                             {
-                                                If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                                If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                                 {
                                                     ADBG ("IUEH 4")
-                                                    ^^^GFX0.IUEH (0x04)
+                                                    ^^^IGPU.IUEH (0x04)
                                                 }
                                             }
                                         }
@@ -13629,10 +13779,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                                 }
                                                 Else
                                                 {
-                                                    If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                                    If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                                     {
                                                         ADBG ("IUEH 6")
-                                                        ^^^GFX0.IUEH (0x06)
+                                                        ^^^IGPU.IUEH (0x06)
                                                     }
                                                 }
                                             }
@@ -13659,10 +13809,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                                     }
                                                     Else
                                                     {
-                                                        If (CondRefOf (\_SB.PCI0.GFX0.IUEH))
+                                                        If (CondRefOf (\_SB.PCI0.IGPU.IUEH))
                                                         {
                                                             ADBG ("IUEH 7")
-                                                            ^^^GFX0.IUEH (0x07)
+                                                            ^^^IGPU.IUEH (0x07)
                                                         }
                                                     }
                                                 }
@@ -13739,7 +13889,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                                                                     }
                                                                                     Else
                                                                                     {
-                                                                                        ^^^GFX0.AINT (0x02, Zero)
+                                                                                        ^^^IGPU.AINT (0x02, Zero)
                                                                                     }
                                                                                 }
                                                                             }
@@ -13876,7 +14026,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LAnd (LEqual (NDUP, One), LEqual (CONV, One)))
                 {
                     Store (Zero, NDUP)
-                    ^^^GFX0.IUEH (0x06)
+                    ^^^IGPU.IUEH (0x06)
                 }
 
                 P8XH (Zero, 0x63)
@@ -14049,7 +14199,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     Store (ECRD (RefOf (LUXH)), Local0)
                     Or (ShiftLeft (Local0, 0x08), ECRD (RefOf (LUXL)), Local0)
-                    ^^^GFX0.AINT (Zero, Local0)
+                    ^^^IGPU.AINT (Zero, Local0)
                     Notify (ALSD, 0x80)
                 }
 
@@ -14091,12 +14241,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
                 Else
                 {
-                    If (CondRefOf (\_SB.PCI0.GFX0.IUER))
+                    If (CondRefOf (\_SB.PCI0.IGPU.IUER))
                     {
-                        Store (^^^GFX0.IUER, Local0)
-                        And (Local0, 0xC0, ^^^GFX0.IUER)
-                        Store (^^^GFX0.IUER, Local0)
-                        Or (Local0, One, ^^^GFX0.IUER)
+                        Store (^^^IGPU.IUER, Local0)
+                        And (Local0, 0xC0, ^^^IGPU.IUER)
+                        Store (^^^IGPU.IUER, Local0)
+                        Or (Local0, One, ^^^IGPU.IUER)
                     }
                 }
 
@@ -14122,10 +14272,10 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 }
                 Else
                 {
-                    If (CondRefOf (\_SB.PCI0.GFX0.IUER))
+                    If (CondRefOf (\_SB.PCI0.IGPU.IUER))
                     {
-                        Store (^^^GFX0.IUER, Local0)
-                        And (Local0, 0xC0, ^^^GFX0.IUER)
+                        Store (^^^IGPU.IUER, Local0)
+                        And (Local0, 0xC0, ^^^IGPU.IUER)
                     }
                 }
 
@@ -14140,7 +14290,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LOr (LEqual (BID, 0x35), LEqual (BID, 0x37)))
                 {
                     ADBG ("Volume Up")
-                    ^^^GFX0.IUEH (0x02)
+                    ^^^IGPU.IUEH (0x02)
                 }
 
                 If (LOr (LEqual (BID, 0x31), LEqual (BID, 0x38)))
@@ -14164,7 +14314,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Else
                         {
                             ADBG ("IUEH")
-                            ^^^GFX0.IUEH (0x02)
+                            ^^^IGPU.IUEH (0x02)
                         }
                     }
                 }
@@ -14180,7 +14330,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 If (LOr (LEqual (BID, 0x35), LEqual (BID, 0x37)))
                 {
                     ADBG ("Volume Down")
-                    ^^^GFX0.IUEH (0x03)
+                    ^^^IGPU.IUEH (0x03)
                 }
 
                 If (LOr (LEqual (BID, 0x31), LEqual (BID, 0x38)))
@@ -14204,7 +14354,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Else
                         {
                             ADBG ("IUEH")
-                            ^^^GFX0.IUEH (0x03)
+                            ^^^IGPU.IUEH (0x03)
                         }
                     }
                 }
@@ -14221,7 +14371,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     ADBG ("Windows Home")
                     Sleep (0x03E8)
-                    ^^^GFX0.IUEH (One)
+                    ^^^IGPU.IUEH (One)
                 }
 
                 If (LOr (LEqual (BID, 0x31), LEqual (BID, 0x38)))
@@ -14245,7 +14395,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Else
                         {
                             ADBG ("IUEH")
-                            ^^^GFX0.IUEH (One)
+                            ^^^IGPU.IUEH (One)
                         }
                     }
                 }
@@ -14279,7 +14429,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         Else
                         {
                             ADBG ("IUEH")
-                            ^^^GFX0.IUEH (0x04)
+                            ^^^IGPU.IUEH (0x04)
                         }
                     }
                 }
@@ -14313,7 +14463,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     }
                     Else
                     {
-                        ^^^GFX0.IUEH (0x06)
+                        ^^^IGPU.IUEH (0x06)
                     }
                 }
 
@@ -14534,7 +14684,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (And (LGreaterEqual (OSYS, 0x07DC), LEqual (CONV, One)))
                     {
-                        If (And (^^^^GFX0.TCHE, 0x40))
+                        If (And (^^^^IGPU.TCHE, 0x40))
                         {
                             Return (0x0F)
                         }
@@ -14552,7 +14702,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 {
                     If (And (LGreaterEqual (OSYS, 0x07DC), LEqual (CONV, One)))
                     {
-                        If (And (^^^^GFX0.TCHE, 0x80))
+                        If (And (^^^^IGPU.TCHE, 0x80))
                         {
                             Return (0x0F)
                         }
@@ -14676,6 +14826,28 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         }
                     }
                 }
+            }
+            Method (RE1B, 1, NotSerialized)
+            {
+                OperationRegion(ERAM, EmbeddedControl, Arg0, 1)
+                Field(ERAM, ByteAcc, NoLock, Preserve) { BYTE, 8 }
+                Return(BYTE)
+            }
+            Method (RECB, 2, Serialized)
+            // Arg0 - offset in bytes from zero-based EC
+            // Arg1 - size of buffer in bits
+            {
+                ShiftRight(Arg1, 3, Arg1)
+                Name(TEMP, Buffer(Arg1) { })
+                Add(Arg0, Arg1, Arg1)
+                Store(0, Local0)
+                While (LLess(Arg0, Arg1))
+                {
+                    Store(RE1B(Arg0), Index(TEMP, Local0))
+                    Increment(Arg0)
+                    Increment(Local0)
+                }
+                Return(TEMP)
             }
         }
 
@@ -15062,7 +15234,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     _SB
                 })
                 Name (BLFC, Zero)
-                Mutex (BATM, 0x01)
+                Mutex(BATM, 0)
                 Method (_STA, 0, NotSerialized)  // _STA: Status
                 {
                     If (ECON)
@@ -15140,7 +15312,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                         0x06))
                     If (LEqual (DerefOf (Index (PBIF, 0x09)), ""))
                     {
-                        Store (ToString (BMFG, Ones), Index (PBIF, 0x09))
+                        Store (ToString (RECB(0x9E,72), Ones), Index (PBIF, 0x09))
                     }
 
                     Acquire (BATM, 0xFFFF)
@@ -16433,9 +16605,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Mutex (EHLD, 0x00)
-    Mutex (MUTX, 0x00)
-    Mutex (OSUM, 0x00)
+    Mutex(EHLD, 0)
+    Mutex(MUTX, 0)
+    Mutex(OSUM, 0)
     Event (WFEV)
     OperationRegion (PRT0, SystemIO, 0x80, 0x04)
     Field (PRT0, DWordAcc, Lock, Preserve)
@@ -16891,16 +17063,16 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             ADBG ("ISCT debug")
             ADBG (Concatenate ("WKRS = ", ToHexString (\_SB.IAOE.WKRS)))
             ADBG (Concatenate ("IBT1 = ", ToHexString (\_SB.IAOE.IBT1)))
-            If (And (\_SB.PCI0.GFX0.TCHE, 0x0100))
+            If (And (\_SB.PCI0.IGPU.TCHE, 0x0100))
             {
                 If (LAnd (And (\_SB.IAOE.IBT1, One), And (\_SB.IAOE.WKRS, 0x10)))
                 {
-                    Store (Or (And (\_SB.PCI0.GFX0.STAT, 0xFFFFFFFFFFFFFFFC), One), \_SB.PCI0.GFX0.STAT)
+                    Store (Or (And (\_SB.PCI0.IGPU.STAT, 0xFFFFFFFFFFFFFFFC), One), \_SB.PCI0.IGPU.STAT)
                     ADBG ("Turning off Gfx")
                 }
                 Else
                 {
-                    Store (And (\_SB.PCI0.GFX0.STAT, 0xFFFFFFFFFFFFFFFC), \_SB.PCI0.GFX0.STAT)
+                    Store (And (\_SB.PCI0.IGPU.STAT, 0xFFFFFFFFFFFFFFFC), \_SB.PCI0.IGPU.STAT)
                     ADBG ("Keeping Gfx on")
                 }
             }
@@ -16960,7 +17132,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             If (And (GBSX, 0x40))
             {
-                \_SB.PCI0.GFX0.IUEH (0x06)
+                \_SB.PCI0.IGPU.IUEH (0x06)
                 XOr (PB1E, 0x08, PB1E)
                 If (And (PB1E, 0x08))
                 {
@@ -16981,7 +17153,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             Store (ECOS, \_SB.PCI0.LPCB.H_EC.OTYP)
             If (And (GBSX, 0x80))
             {
-                \_SB.PCI0.GFX0.IUEH (0x07)
+                \_SB.PCI0.IGPU.IUEH (0x07)
                 XOr (PB1E, 0x10, PB1E)
                 If (And (PB1E, 0x10))
                 {
@@ -17018,12 +17190,12 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                     {
                         If (LEqual (LIDS, Zero))
                         {
-                            Store (0x80000000, \_SB.PCI0.GFX0.CLID)
+                            Store (0x80000000, \_SB.PCI0.IGPU.CLID)
                         }
 
                         If (LEqual (LIDS, One))
                         {
-                            Store (0x80000003, \_SB.PCI0.GFX0.CLID)
+                            Store (0x80000003, \_SB.PCI0.IGPU.CLID)
                         }
                     }
 
@@ -17161,9 +17333,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
             If (CONV)
             {
-                If (LNotEqual (ShiftRight (\_SB.PCI0.GFX0.IUER, 0x06), \_SB.PCI0.LPCB.H_EC.LID))
+                If (LNotEqual (ShiftRight (\_SB.PCI0.IGPU.IUER, 0x06), \_SB.PCI0.LPCB.H_EC.LID))
                 {
-                    Store (ShiftLeft (\_SB.PCI0.LPCB.H_EC.LID, 0x06), \_SB.PCI0.GFX0.IUER)
+                    Store (ShiftLeft (\_SB.PCI0.LPCB.H_EC.LID, 0x06), \_SB.PCI0.IGPU.IUER)
                     Store (One, \_SB.PCI0.LPCB.H_EC.NDUP)
                     Store (0x05, \_SB.PCI0.LPCB.H_EC.BTMR)
                 }
@@ -18577,7 +18749,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     {
         If (LEqual (And (DIDX, 0x0F00), 0x0400))
         {
-            Notify (\_SB.PCI0.GFX0.DD1F, Arg0)
+            Notify (\_SB.PCI0.IGPU.DD1F, Arg0)
         }
     }
 
@@ -18903,9 +19075,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
         Method (_L66, 0, NotSerialized)  // _Lxx: Level-Triggered GPE
         {
-            If (LAnd (\_SB.PCI0.GFX0.GSSE, LNot (GSMI)))
+            If (LAnd (\_SB.PCI0.IGPU.GSSE, LNot (GSMI)))
             {
-                \_SB.PCI0.GFX0.GSCI ()
+                \_SB.PCI0.IGPU.GSCI ()
             }
         }
 
@@ -18926,9 +19098,9 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 Store (\_SB.PCI0.LPCB.H_EC.ECRD (RefOf (\_SB.PCI0.LPCB.H_EC.LSTE)), LIDS)
                 If (IGDS)
                 {
-                    If (\_SB.PCI0.GFX0.GLID (LIDS))
+                    If (\_SB.PCI0.IGPU.GLID (LIDS))
                     {
-                        Or (0x80000000, \_SB.PCI0.GFX0.CLID, \_SB.PCI0.GFX0.CLID)
+                        Or (0x80000000, \_SB.PCI0.IGPU.CLID, \_SB.PCI0.IGPU.CLID)
                     }
                 }
 
@@ -18958,7 +19130,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             {
                 ADBG ("Rotation Lock")
                 Sleep (0x03E8)
-                \_SB.PCI0.GFX0.IUEH (0x04)
+                \_SB.PCI0.IGPU.IUEH (0x04)
             }
         }
     }
@@ -19028,7 +19200,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         {
             ^RP07.PXSX, 
             ^RP08.PXSX, 
-            EHC1, 
+            EH01, 
             SAT0, 
             HDEF
         })
@@ -20787,7 +20959,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR11)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR11)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20820,7 +20992,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR12)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR12)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20853,7 +21025,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR13)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR13)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20892,7 +21064,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR14)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR14)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20925,7 +21097,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR15)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR15)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20958,7 +21130,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR16)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR16)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -20991,7 +21163,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR17)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR17)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21024,7 +21196,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC1.HUBN.PR01.PR18)
+    Scope (_SB.PCI0.EH01.HUBN.PR01.PR18)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21057,7 +21229,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR11)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR11)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21090,7 +21262,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR12)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR12)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21123,7 +21295,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR13)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR13)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21156,7 +21328,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR14)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR14)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21189,7 +21361,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR15)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR15)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21222,7 +21394,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.EHC2.HUBN.PR01.PR16)
+    Scope (_SB.PCI0.EH02.HUBN.PR01.PR16)
     {
         Method (_UPC, 0, Serialized)  // _UPC: USB Port Capabilities
         {
@@ -21255,7 +21427,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         }
     }
 
-    Scope (_SB.PCI0.GFX0)
+    Scope (_SB.PCI0.IGPU)
     {
         Method (_DEP, 0, NotSerialized)  // _DEP: Dependencies
         {
@@ -22011,7 +22183,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                 0x02, 
                 Package (0x01)
                 {
-                    "\\_SB.PCI0.GFX0"
+                    "\\_SB.PCI0.IGPU"
                 }, 
 
                 Package (0x01)
@@ -22023,7 +22195,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             {
                 Package (0x02)
                 {
-                    "\\_SB.PCI0.GFX0", 
+                    "\\_SB.PCI0.IGPU", 
                     0xFFFFFFFF
                 }, 
 
@@ -22133,7 +22305,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
                 Package (0x03)
                 {
-                    "\\_SB.PCI0.GFX0", 
+                    "\\_SB.PCI0.IGPU", 
                     One, 
                     Package (0x02)
                     {
@@ -22971,7 +23143,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
                                         One, 
                                         Package (0x01)
                                         {
-                                            "\\_SB.PCI0.GFX0"
+                                            "\\_SB.PCI0.IGPU"
                                         }
                                     })
                                 }
@@ -26367,10 +26539,17 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Name (CSST, Zero)
         Method (SBRT, 0, Serialized)
         {
+            \RMDT.P1 ("Method SBRT start...")
+
             Acquire (MUTX, 0xFFFF)
             Store (\_SB.PCI0.LPCB.H_EC.LBRI, Local0)
+            
+            \RMDT.P2 ("Local0 in method SBRT",Local0)
+            
             Release (MUTX)
             SPBE (PWRS, Local0, Zero)
+            
+            \RMDT.P1 ("Method SBRT end...")
         }
 
         Method (SBRR, 0, Serialized)
@@ -26411,27 +26590,89 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
 
         Method (SPBE, 3, NotSerialized)
         {
+            \RMDT.P1 ("Method SPBE start...")
+            \RMDT.P2 ("Arg0",Arg0)
+            \RMDT.P2 ("Arg1",Arg1)
+            \RMDT.P2 ("Arg2",Arg2)
+            \RMDT.P2 ("PRM0",PRM0)
+            
             Store (Arg1, CBRT)
-            If (LNot (Arg2))
+            // Arg1 value is 0x8 to 0x88 (0x8,0x18,0x28,0x38,0x48,0x58,0x68,0x78,0x88) 
+            // PRM0 is unused EC Field to compare with Arg1 to get correct FN + Key direction
+            // Patch begin                                                              
+            //===============
+            
+            
+            If(LEqual(Arg1,PRM0))
             {
+                If(LEqual(Arg1,0x8))
+                {
+                   // Reach bottom of limit (0x8)
+                   // Brightness down
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x20)            
+                }
+                Else
+                {
+                    If(LEqual(Arg1,0x88))
+                    {
+                       // Reach top of limit (0x88)
+                       // Brightness Up
+                       Notify(\_SB.PCI0.LPCB.PS2K, 0x10)            
+                    }
+                }
+            }
+            Else
+            {
+                If(LGreater(Arg1,PRM0))
+                {
+                   // Arg1 > PRM0, It must me UP
+                   // Brightness Up
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x10)            
+                }
+                Else
+                {
+                   // Arg 1 < PRM0, pretty sure it is down
+                   // Brightness Down
+                   Notify(\_SB.PCI0.LPCB.PS2K, 0x20)            
+                }    
+            }
+            
+            // Save Arg1 to PRM for later use
+            Store(Arg1,PRM0)
+            
+            // ================
+            // Patch end
+            
+            If (LNot (Arg2))
+            {                
+                \RMDT.P1 ("Arg2 is false")
                 If (Arg0)
                 {
+                    \RMDT.P1 ("Arg0 is true")                                        
                     Store (CTBF (ACBL), Local0)
                     And (ShiftRight (Arg1, 0x04), 0x0F, Local1)
                 }
                 Else
-                {
+                {                    
+                    \RMDT.P1 ("Arg0 is false")                                        
                     Store (CTBF (DCBL), Local0)
                     And (Arg1, 0x0F, Local1)
                 }
+                
+                \RMDT.P2 ("Local0",Local0)                                        
+                \RMDT.P2 ("Local1",Local1)                                        
 
                 Store (G_DB (Local0, Local1), Local1)
+                \RMDT.P2 ("Local1 from G_DB(Local0,Local1)",Local1)                                        
                 If (Local1)
                 {
+                    \RMDT.P1 ("Local1 is true")                                        
                     Store (Local1, BRTL)
-                    \_SB.PCI0.GFX0.AINT (One, BRTL)
+                    \RMDT.P2 ("BRTL",BRTL)                                        
+                    \_SB.PCI0.IGPU.AINT (One, BRTL)
                 }
             }
+            \RMDT.P1 ("Method SPBE end...")
         }
 
         Method (WPC0, 2, NotSerialized)
@@ -26490,7 +26731,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             Return (Zero)
         }
 
-        Mutex (MSMI, 0x07)
+        Mutex(MSMI, 0)
         Method (NBIF, 0, Serialized)
         {
             If (BATP)
@@ -26621,7 +26862,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
         Name (_HID, "NULE0000")  // _HID: Hardware ID
         Name (MAC, Buffer (0x06)
         {
-             0x11, 0x22, 0x33, 0x44, 0x55, 0x66             
+             0x55, 0xAD, 0xA7, 0xD4, 0x5C, 0x75             
         })
         Method (_DSM, 4, NotSerialized)  // _DSM: Device-Specific Method
         {
@@ -26668,7 +26909,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
     {
         Name (_HID, "RMD0000")  // _HID: Hardware ID
         Name (RING, Package (0x0100) {})
-        Mutex (RTMX, 0x00)
+        Mutex(RTMX, 0)
         Name (HEAD, Zero)
         Name (TAIL, Zero)
         Method (PUSH, 1, NotSerialized)
@@ -26789,5 +27030,7 @@ DefinitionBlock ("DSDT.aml", "DSDT", 2, "LGE   ", "BDW     ", 0x00000000)
             PUSH (TEMP)
         }
     }
+    Method (B1B2, 2, NotSerialized) { Return (Or (Arg0, ShiftLeft (Arg1, 8))) }
+
 }
 
